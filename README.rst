@@ -3,6 +3,8 @@ install
 
 ``git clone --recurse-submodules https://github.com/flesage/vesselseg.git``
 
+``cd vesselseg``
+
 ``conda create -n ${ENV_NAME} python=3.7 pytorch spyder scipy scikit-image scikit-learn matplotlib``
 
 ``source activate ${ENV_NAME}``
