@@ -5,7 +5,7 @@ Created on Wed Oct 14 10:24:54 2020
 
 @author: rdamseh
 """
-from util import dataset, train, evaluate, DiceLoss, plot 
+from util import dataset, train, evaluate, DiceLoss, DiceBCELoss, IoULoss, plot 
 from magic_vnet import vnet
 from datetime import datetime
 import time
@@ -19,13 +19,15 @@ if __name__=='__main__':
     if not os.path.isdir('results'):
         os.mkdir('results')
         
-    datafile_train='/home/rdamseh/VascNet_supp/data/test_reg.h5'
-    datafile_test='/home/rdamseh/VascNet_supp/data/test_reg.h5'
-    run_test=1
+    datafile_train='/home/rdamseh/VascNet_supp/data/train_reg.h5' # path to training dataset
+    datafile_test='/home/rdamseh/VascNet_supp/data/test_reg.h5' # path to testing dataset
+    run_test=1 # if testing is needed
 
-    epochs = 2 # The number of epochs
+    epochs = 5 # The number of epochs
     batch_size= 1
     lr = 0.01 # learning rate
+    criterion = IoULoss() # loss function: DiceLoss(), DiceBCELoss(), IoULoss()
+    length=None # number of training/testing batches: keep None if want to train/test on whole dataset
 
     # ---------- init torch ---------------------------
     torch.manual_seed(0)
@@ -48,7 +50,7 @@ if __name__=='__main__':
     #---------------------------------------------------
     
     #----------- read dataset --------------------------
-    data=dataset(datafile_train, length=10)
+    data=dataset(datafile_train, length=length, augment=0)
     #---------------------------------------------------
 
     #----------- training routine -----------------------
@@ -67,7 +69,7 @@ if __name__=='__main__':
         
         # train
         loss_tr = train(model=model, 
-                        criterion=DiceLoss(), 
+                        criterion=criterion, 
                         optimizer=optimizer, 
                         scheduler=scheduler, 
                         dataset=data, 
@@ -77,7 +79,7 @@ if __name__=='__main__':
         
         # val
         val_loss, loss_v = evaluate(model=model, 
-                                    criterion=DiceLoss(), 
+                                    criterion=criterion, 
                                     dataset=data,
                                     batch_size=batch_size)
         loss_val.append(loss_v)
@@ -105,10 +107,10 @@ if __name__=='__main__':
 
     #----------- testing -----------------------
     if run_test:
-        data_test=dataset(datafile_test, train_ratio=0, length=10)
+        data_test=dataset(datafile_test, train_ratio=0, length=length)
         
         test_loss, loss_t = evaluate(model=model, 
-                                    criterion=DiceLoss(), 
+                                    criterion=criterion, 
                                     dataset=data_test,
                                     batch_size=batch_size)
         print('-' * 89)
@@ -116,19 +118,20 @@ if __name__=='__main__':
         np.savetxt('results/testLoss_'+model_name, np.array(loss_t))
 
     #----------- test example ---------------------------
-    test_model = torch.load('results/'+'VNet_BSC_30_01_2021_20_48')
-    datafile='/home/rdamseh/VascNet_supp/data/test_reg.h5'
-    data_test=dataset(datafile_test)
-    idx=100
-    im, seg = data_test.get_batch(idx, 1) # return test batch with index 'idx'
-    with torch.no_grad():
-        out=torch.sigmoid(test_model(im))
-        out=out.cpu().numpy()
-        out=out[0,0,:,:,:]
-    im_=im.cpu().numpy()[0,0,:,:,:]
-    seg_=seg.cpu().numpy()[0,0,:,:,:]
-    plot(im_, seg_>0)
-    plot(im_, out>.9)
+    # test_model = model
+    # datafile='/home/rdamseh/VascNet_supp/data/test_reg.h5'
+    # data_test=dataset(datafile_test)
+    # idx=100
+    # im, seg = data_test.get_batch(idx, 1) # return test batch with index 'idx'
+    # with torch.no_grad():
+    #     out=torch.sigmoid(test_model(im))
+    #     out=out.cpu().numpy()
+    #     out=out[0,0,:,:,:]
+    # im_=im.cpu().numpy()[0,0,:,:,:]
+    # seg_=seg.cpu().numpy()[0,0,:,:,:]
+    # plot(im_, seg_>0)
+    # plot(im_, out>.9)
+        
     # from matplotlib import pyplot as plt
     # fig, axes = plt.subplots(1,3)
     # for ax, i, l in zip(axes, [im_, seg_, out], ['im','seg','pred']):

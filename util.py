@@ -21,7 +21,7 @@ def param_num(model):
     
 class dataset:
     
-    def __init__(self, path, train_ratio=.7, length=None):
+    def __init__(self, path, train_ratio=.7, length=None, augment=0):
        
         self.data=h5py.File(path, 'r')
         if length is not None:
@@ -64,7 +64,7 @@ class dataset:
         seg=np.array([self.data['seg'+str(i)] for i in ind])
 
         im=torch.FloatTensor(im)
-        seg=torch.LongTensor(seg)
+        seg=torch.LongTensor(seg>0)
 
         return im[:,None,:,:,:], seg[:,None,:,:,:]
 
@@ -149,6 +149,53 @@ class DiceLoss(nn.Module):
         
         return 1 - dice
 
+class IoULoss(nn.Module):
+    
+    def __init__(self, weight=None, size_average=True):
+        super(IoULoss, self).__init__()
+
+    def forward(self, inputs, targets, smooth=1):
+        
+        #comment out if your model contains a sigmoid or equivalent activation layer
+        inputs = torch.sigmoid(inputs)      
+        
+        #flatten label and prediction tensors
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+        
+        #intersection is equivalent to True Positive count
+        #union is the mutually inclusive area of all labels & predictions 
+        intersection = (inputs * targets).sum()
+        total = (inputs + targets).sum()
+        union = total - intersection 
+        
+        IoU = (intersection + smooth)/(union + smooth)
+                
+        return 1 - IoU
+
+class DiceBCELoss(nn.Module):
+    
+    def __init__(self, weight=None, size_average=True):
+        super(DiceBCELoss, self).__init__()
+
+    def forward(self, inputs, targets, smooth=1):
+        
+        #comment out if your model contains a sigmoid or equivalent activation layer
+        inputs = torch.sigmoid(inputs)       
+        
+        #flatten label and prediction tensors
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+        
+        intersection = (inputs * targets).sum()                            
+        dice_loss = 1 - (2.*intersection + smooth)/(inputs.sum() + targets.sum() + smooth) 
+ 
+        targets=targets.float()
+        BCE = torch.functional.F.binary_cross_entropy(inputs, targets, reduction='mean')
+        Dice_BCE = BCE + dice_loss
+        
+        return Dice_BCE    
+    
 
 def save(model, epoch, optimizer, path):
     
