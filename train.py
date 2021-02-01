@@ -27,7 +27,7 @@ if __name__=='__main__':
     batch_size= 1
     lr = 0.01 # learning rate
     criterion = IoULoss() # loss function: DiceLoss(), DiceBCELoss(), IoULoss()
-    length=None # number of training/testing batches: keep None if want to train/test on whole dataset
+    length=None # number of training/testing volumes: keep None if want to train/test on whole dataset
 
     # ---------- init torch ---------------------------
     torch.manual_seed(0)
@@ -35,7 +35,7 @@ if __name__=='__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")    
     #---------------------------------------------------
 
-    # set of model that could be used:
+    # set of models that can be used:
         # "vnet.VNet" --> originl vnet
         # "vnet.VNet" "vnet.VNet_CSE" "vnet.VNet_BSC" "vnet.VNet_SCSE" "vnet.VNet_SSE" "vnet.VNet_MABN" "vnet.VNet_ASPP" 
         # "vnet.VBNet" "vnet.VBNet_CSE" "vnet.VBNet_BSC" "vnet.VBNet_SCSE" "vnet.VBNet_SSE"  "vnet.VBNet_ASPP" 
