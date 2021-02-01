@@ -29,10 +29,9 @@ intstall optional
 
 training
 --------
-training using different hyper parameter: vnet model choice, number of epochs, loss function, learning rate, etc, can be done using 'train.py'
-
-the out model along with training/val/testing cureves will saved to 'results/' with unique datetime stamp. 
-
+training using different hyper parameters: vnet model choice, number of epochs, loss function, learning rate, etc, can be done using 'train.py'
+ 
+the best model along with training/val/testing curves will be saved to 'results/' with a unique date-time stamp.
 
 prediction
 ----------
