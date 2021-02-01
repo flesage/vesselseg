@@ -31,7 +31,7 @@ training
 --------
 training using different hyper parameters: vnet model choice, number of epochs, loss function, learning rate, etc, can be done using 'train.py'
  
-the out model along with training/val/testing curves will be saved to 'results/' with a unique date-time stamp.
+the best model along with training/val/testing curves will be saved to 'results/' with a unique date-time stamp.
 
 prediction
 ----------
