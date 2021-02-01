@@ -1,3 +1,8 @@
+===============
+VesselSeg 
+===============
+Pytorch implementation of various VNet like models for 3D vascular segmentation from microscopy angiograms 
+
 install
 -------
 ``git clone --recurse-submodules https://github.com/flesage/vesselseg.git``
