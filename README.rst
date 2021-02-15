@@ -17,7 +17,7 @@ install
 
 ``pip install --upgrade https://github.com/VincentStimper/mclahe/archive/numpy.zip``
 
-``cd Magic_VNet``
+``cd Magic-VNet``
 
 ``python setup.py install``
 
