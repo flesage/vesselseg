@@ -15,17 +15,13 @@ install
 
 ``pip install h5py tqdm``
 
+``pip install --upgrade https://github.com/VincentStimper/mclahe/archive/numpy.zip``
+
 ``cd Magic_VNet``
 
 ``python setup.py install``
 
 ``cd ..``
-
-intstall optional
------------------
-``pip install --upgrade https://github.com/VincentStimper/mclahe/archive/numpy.zip``
-
-``sudo apt-get install nvidia-cuda-toolkit``
 
 training
 --------
