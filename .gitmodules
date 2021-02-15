@@ -1,1 +1,4 @@
 
+[submodule "Magic-VNet"]
+	path = Magic-VNet
+	url = https://github.com/Damseh/Magic-VNet.git
